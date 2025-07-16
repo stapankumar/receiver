@@ -4,8 +4,17 @@ app = Flask(__name__)
 
 @app.route("/ae", methods=["POST"])
 def receive():
-    print("Notification received:", request.data.decode())
-    return "ACK", 200
+    print("\n📬 Notification received!")
+    print(f"🔗 URL Path: {request.path}")
+    print(f"📨 Method: {request.method}")
+    print(f"📥 Headers:\n{request.headers}")
+    try:
+        payload = request.get_data(as_text=True)
+        print(f"📦 Raw Payload:\n{payload}")
+    except Exception as e:
+        print(f"⚠️ Failed to decode payload: {e}")
+
+    return "", 200  #only status with no body or oneM2M compliant body can be returned
 
 @app.route("/")
 def health():
