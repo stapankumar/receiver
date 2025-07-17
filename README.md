@@ -1,6 +1,6 @@
 # Receiver
 
-A simple Flask server to receive HTTP notifications via `/nuri` endpoint.
+A simple Flask server to receive HTTP notifications via `/ae` endpoint.
 
 ## Endpoints
 

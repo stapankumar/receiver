@@ -4,15 +4,15 @@ app = Flask(__name__)
 
 @app.route("/ae", methods=["POST"])
 def receive():
-    print("\n📬 Notification received!")
-    print(f"🔗 URL Path: {request.path}")
-    print(f"📨 Method: {request.method}")
-    print(f"📥 Headers:\n{request.headers}")
+    print("\n📬 Notification received!", flush=True)
+    print(f"🔗 URL Path: {request.path}", flush=True)
+    print(f"📨 Method: {request.method}", flush=True)
+    print(f"📥 Headers:\n{request.headers}", flush=True)
     try:
         payload = request.get_data(as_text=True)
-        print(f"📦 Raw Payload:\n{payload}")
+        print(f"📦 Raw Payload:\n{payload}", flush=True)
     except Exception as e:
-        print(f"⚠️ Failed to decode payload: {e}")
+        print(f"⚠️ Failed to decode payload: {e}", flush=True)
 
     return "", 200  #only status with no body or oneM2M compliant body can be returned
 
