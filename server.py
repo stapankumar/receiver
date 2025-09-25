@@ -12,6 +12,7 @@ latest_notification = {
 
 @app.route("/ae", methods=["POST"])
 def receive():
+    global latest_notification   #🔑tell Python to use the global dict
     print("\n📬 Notification received!", flush=True)
     print(f"🔗 URL Path: {request.path}", flush=True)
     print(f"📨 Method: {request.method}", flush=True)
@@ -32,6 +33,13 @@ def receive():
 
     return "", 200  #only status with no body or oneM2M compliant body can be returned
 
+@app.route("/")
+def home():
+    if latest_notification:
+        return f"✅ Latest Notification:<br><pre>{latest_notification}</pre>", 200
+    else:
+        return "✅ Receiver up. No notifications received yet.", 200
+    
 @app.route("/get")
 def health():
     if latest_notification["payload"] is None:
