@@ -35,10 +35,7 @@ def receive():
 
 @app.route("/")
 def home():
-    if latest_notification:
-        return f"✅ Latest Notification:<br><pre>{latest_notification}</pre>", 200
-    else:
-        return "✅ Receiver up. No notifications received yet.", 200
+    return "✅ Receiver is up and running.", 200
     
 @app.route("/get")
 def health():
