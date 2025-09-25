@@ -32,7 +32,7 @@ def receive():
 
     return "", 200  #only status with no body or oneM2M compliant body can be returned
 
-@app.route("/")
+@app.route("/get")
 def health():
     if latest_notification["payload"] is None:
         return "✅ Receiver up. No notifications received yet.", 200
