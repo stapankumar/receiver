@@ -1,18 +1,32 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
+import psycopg2
+from dotenv import load_dotenv
+import os
+
+from parser.notification_parser import parse_notification_payload
+from db.notifications_repo import (
+    insert_notification,
+    fetch_latest,
+    fetch_recent
+)
+
+load_dotenv()
 
 app = Flask(__name__)
 
-#store latest notification globally
-latest_notification = {
-    "headers": None,
-    "payload": None,
-    "path": None,
-    "method": None
+DB_CONFIG = {
+    "host": os.getenv("DB_HOST"),  
+    "port": int(os.getenv("DB_PORT")),          
+    "database": os.getenv("DB_NAME"),          
+    "user": os.getenv("DB_USER"),           
+    "password": os.getenv("DB_PASSWORD")    
 }
 
-@app.route("/ae", methods=["POST"])
+def get_db_conn():
+    return psycopg2.connect(**DB_CONFIG)
+
+@app.route("/notify", methods=["POST"])
 def receive():
-    global latest_notification   #🔑tell Python to use the global dict
     print("\n📬 Notification received!", flush=True)
     print(f"🔗 URL Path: {request.path}", flush=True)
     print(f"📨 Method: {request.method}", flush=True)
@@ -20,16 +34,18 @@ def receive():
     try:
         payload = request.get_data(as_text=True)
         print(f"📦 Raw Payload:\n{payload}", flush=True)
+
+        insert_notification(
+            request.path,
+            request.method,
+            request.headers,
+            payload
+        )
+
+        print("📬 Notification stored", flush=True)
+
     except Exception as e:
         print(f"⚠️ Failed to decode payload: {e}", flush=True)
-
-    #update latest notification
-    latest_notification = {
-        "headers": dict(request.headers),
-        "payload": payload,
-        "path": request.path,
-        "method": request.method
-    }
 
     return "", 200  #only status with no body or oneM2M compliant body can be returned
 
@@ -37,23 +53,77 @@ def receive():
 def home():
     return "✅ Receiver is up and running.", 200
     
-@app.route("/get")
-def health():
-    if latest_notification["payload"] is None:
-        return "✅ Receiver up. No notifications received yet.", 200
+@app.route("/getLatest")
+def latest():
+    row = fetch_latest()
+    if row is None:
+        return "✅ Receiver is up. No notifications received yet.", 200
 
     #show latest notification in a simple HTML format
     return f"""
     <h2>📬 Latest Notification Received</h2>
-    <p><b>Path:</b> {latest_notification['path']}</p>
-    <p><b>Method:</b> {latest_notification['method']}</p>
+    <p><b>Path:</b> {row[0]}</p>
+    <p><b>Method:</b> {row[1]}</p>
     <p><b>Headers:</b></p>
-    <pre>{latest_notification['headers']}</pre>
+    <pre>{row[2]}</pre>
     <p><b>Payload:</b></p>
-    <pre>{latest_notification['payload']}</pre>
+    <pre>{row[3]}</pre>
     """, 200
 
+@app.route("/notifications", methods=["GET"])
+def get_notifications():
+    rows = fetch_recent(50)
+
+    result = []
+    for r in rows:
+        result.append({
+            "id": r[0],
+            "payload": r[4],
+            "received_at": r[5].isoformat()
+        })
+
+    return jsonify(result)
+
+@app.route("/agri", methods=["GET"])
+def get_parsed_agri_data():
+    rows = fetch_recent(50)
+    
+    parsed_results = []
+    for r in rows:
+        parsed_con = parse_notification_payload(r[1])
+
+        parsed_results.append({
+            "notification_id": r[0],
+            "data": parsed_con,
+            "received_at": r[2].isoformat()
+        })
+
+    return jsonify(parsed_results)
+
+@app.route("/notify/agri", methods=["POST"])
+def receive_agri():
+    print("\n🌱 Agri 📬 Notification received!", flush=True)
+    print(f"🔗 URL Path: {request.path}", flush=True)
+    print(f"📨 Method: {request.method}", flush=True)
+    print(f"📥 Headers:\n{request.headers}", flush=True)
+    try:
+        payload = request.get_data(as_text=True)
+        print(f"📦 Raw Payload:\n{payload}", flush=True)
+
+        insert_notification(
+            request.path,
+            request.method,
+            request.headers,
+            payload
+        )
+
+        print("🌱 Agri 📬 Notification stored", flush=True)
+
+    except Exception as e:
+        print(f"⚠️ Failed to decode payload: {e}", flush=True)
+
+    return "", 200
+
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
