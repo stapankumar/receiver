@@ -78,8 +78,8 @@ def get_notifications():
     for r in rows:
         result.append({
             "id": r[0],
-            "payload": r[4],
-            "received_at": r[5].isoformat()
+            "payload": r[1],
+            "received_at": r[2].isoformat()
         })
 
     return jsonify(result)
@@ -92,11 +92,17 @@ def get_parsed_agri_data():
     for r in rows:
         parsed_con = parse_notification_payload(r[1])
 
-        parsed_results.append({
-            "notification_id": r[0],
-            "data": parsed_con,
-            "received_at": r[2].isoformat()
-        })
+        response_obj = {}
+
+        #flatten sensor data
+        if isinstance(parsed_con, dict):
+            response_obj.update(parsed_con)
+
+        #append metadata
+        response_obj["notification_id"] = r[0]
+        response_obj["received_at"] = r[2].isoformat()
+
+        parsed_results.append(response_obj)
 
     return jsonify(parsed_results)
 
