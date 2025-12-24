@@ -1,20 +1,20 @@
-# 🚀 Certificate-Based Notification Receiver
+# Certificate-Based Notification Receiver
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-2.0+-green.svg)](https://flask.palletsprojects.com/)
 
 A sleek and secure Flask-based server designed to receive and process certificate-based HTTP notifications. Perfect for handling webhook payloads with built-in logging and health checks.
 
-## ✨ Features
+## Features
 
-- 🔒 **Secure Notifications**: Handles certificate-based authentication for incoming requests
-- 📡 **Webhook Receiver**: Dedicated `/notify` endpoint for notification payloads
-- 🏥 **Health Monitoring**: Built-in health check endpoint
-- 🐳 **Docker Ready**: Containerized deployment with Docker Compose
-- 📝 **Comprehensive Logging**: Logs all incoming notifications for auditing
-- ⚡ **Lightweight**: Minimal dependencies, fast startup
+- **Secure Notifications**: Handles certificate-based authentication for incoming requests
+- **Webhook Receiver**: Dedicated `/notify` endpoint for notification payloads
+- **Health Monitoring**: Built-in health check endpoint
+- **Docker Ready**: Containerized deployment with Docker Compose
+- **Comprehensive Logging**: Logs all incoming notifications for auditing
+- **Lightweight**: Minimal dependencies, fast startup
 
-## 🛠️ Installation
+## Installation
 
 ### Prerequisites
 - Python 3.8+
@@ -27,16 +27,22 @@ A sleek and secure Flask-based server designed to receive and process certificat
    cd receiver
    ```
 
-2. Install dependencies:
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  #on Windows: venv\Scripts\activate
+   ```
+
+3. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. Set up environment variables:
-   - Copy `.env.dummy` to `.env`
+4. Set up environment variables:
+   - Copy `.env.dummy` to `.env` (if not already present)
    - Update the values in `.env` with your actual database credentials
 
-4. Run the server:
+5. Run the server:
    ```bash
    python server.py
    ```
@@ -45,11 +51,11 @@ A sleek and secure Flask-based server designed to receive and process certificat
 1. Set up your `.env` file as described above
 2. Build and run:
    ```bash
-   docker-compose build
-   docker-compose up -d
+   docker compose build
+   docker compose up -d
    ```
 
-## 📖 Usage
+## Usage
 
 ### Endpoints
 
@@ -71,28 +77,17 @@ curl http://localhost:5000/
 #returns: {"status": "healthy"}
 ```
 
-## 🚀 Deployment
+## Deployment
 
 ### Render (Free HTTPS)
 Deploy effortlessly on [Render](https://render.com/) for a free HTTPS URL with automatic TLS certificates.
 
-### Docker Compose
-For local testing or production deployment:
-```yaml
-#docker-compose.yaml
-version: '3.8'
-services:
-  receiver:
-    build: .
-    ports:
-      - "5000:5000"
-```
 
-## 📊 Database
+## Database
 
 The application uses a SQLite database initialized with `init.sql` for storing notification logs.
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
@@ -103,7 +98,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 5. Open a Pull Request
 
 
-## 📞 Support
+## Support
 
 If you have any questions or issues, please open an issue on GitHub.
 
