@@ -4,13 +4,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DB_CONFIG = {
-    "host": os.getenv("DB_HOST"),
-    "port": int(os.getenv("DB_PORT")),
-    "database": os.getenv("DB_NAME"),
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD")
-}
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_db_conn():
-    return psycopg2.connect(**DB_CONFIG)
+    return psycopg2.connect(
+        DATABASE_URL,
+        sslmode="require"
+    )
