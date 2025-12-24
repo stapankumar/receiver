@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-import psycopg2
 from dotenv import load_dotenv
 import os
 
@@ -13,17 +12,6 @@ from db.notifications_repo import (
 load_dotenv()
 
 app = Flask(__name__)
-
-DB_CONFIG = {
-    "host": os.getenv("DB_HOST"),  
-    "port": int(os.getenv("DB_PORT")),          
-    "database": os.getenv("DB_NAME"),          
-    "user": os.getenv("DB_USER"),           
-    "password": os.getenv("DB_PASSWORD")    
-}
-
-def get_db_conn():
-    return psycopg2.connect(**DB_CONFIG)
 
 @app.route("/notify", methods=["POST"])
 def receive():
