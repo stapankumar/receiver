@@ -1,16 +1,23 @@
 FROM python:3.11-slim
 
 WORKDIR /app
+
 ENV PYTHONPATH=/app
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY server.py .
-COPY parser ./parser
-COPY db ./db
+# Copy application code
+COPY app ./app
+COPY wsgi.py .
 COPY .env .
+COPY create_schema.py .
+COPY init.sql .
+COPY entrypoint.sh .
 
-EXPOSE 5000
+RUN chmod +x entrypoint.sh
 
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "server:app"]
+EXPOSE 8089
+
+ENTRYPOINT ["./entrypoint.sh"]
+
