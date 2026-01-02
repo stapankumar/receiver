@@ -103,7 +103,7 @@ def fetch_latest():
 
     cur.execute("""
         SELECT path, method, headers, payload
-        FROM "M2M_NOTIFICATIONS"."RESOURCE_NOTIFICATION"
+        FROM "APPLICATION_DATA"."RESOURCE_NOTIFICATION"
         ORDER BY received_at DESC
         LIMIT 1
     """)
